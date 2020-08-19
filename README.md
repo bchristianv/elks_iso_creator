@@ -51,7 +51,7 @@ source_build_dir=CentOS-8-2-2004-x86_64-dvd
     -e "s/{{ osfamily }}/${osfamily}/" \
     -e "s/{{ operatingsystemrelease }}/${operatingsystemrelease}/" \
     -e "s/{{ hostname }}/${hostname}/" \
-    templates/grub.conf > ${source_build_dir}/isolinux/grub.conf
+    templates/boot/grub.conf > ${source_build_dir}/isolinux/grub.conf
 ```
 
 From template generate ``${source_build_dir}/isolinux/isolinux.cfg`` - MBR boot
@@ -69,7 +69,7 @@ source_build_dir=CentOS-8-2-2004-x86_64-dvd
     -e "s/{{ operatingsystemrelease }}/${operatingsystemrelease}/g" \
     -e "s/{{ hostname }}/${hostname}/g" \
     -e "s/{{ architecture }}/${architecture}/g" \
-    templates/isolinux.cfg > ${source_build_dir}/isolinux/isolinux.cfg
+    templates/boot/isolinux.cfg > ${source_build_dir}/isolinux/isolinux.cfg
 ```
 
 From template generate ``${source_build_dir}/EFI/BOOT/grub.cfg`` - UEFI boot
@@ -87,7 +87,7 @@ source_build_dir=CentOS-8-2-2004-x86_64-dvd
     -e "s/{{ operatingsystemrelease }}/${operatingsystemrelease}/g" \
     -e "s/{{ hostname }}/${hostname}/g" \
     -e "s/{{ architecture }}/${architecture}/g" \
-    templates/grub.cfg > ${source_build_dir}/EFI/BOOT/grub.cfg
+    templates/boot/grub.cfg > ${source_build_dir}/EFI/BOOT/grub.cfg
 ```
 
 Add kickstart configuration file to the root of the `${source_build_dir}` as:
