@@ -1,8 +1,21 @@
-# el_ks_iso_builder
-Custom .ISO install disk builder that performs a network kickstart installation of a base Enterprise Linux OS
+# EL Kickstart ISO Builder
+An all-in-one Enterprise Linux installation iso image builder that performs a kickstart installation.
 
+## PURPOSE
+Create an Master Boot Record (MBR) and Unified Extensible Firmware Interface (UEFI) compatible CentOS or Red Hat Enterprise Linux installation iso image that:
+- contains a bootable installation image - network or complete package index depending on source installation media
+- includes a user supplied kickstart configuration file
+- automatically initiates the kickstart installation after a configurable timeout period 
+
+## REQUIREMENTS
+- genisoimage
+- syslinux
+- isomd5sum
+
+## USAGE
 Choose an Enterprise Linux installation ISO image, depending on source installation preference - media or network.
 
+Copy all of the files from an existing Enterprise Linux installation image to a build directory. 
 
 ```
 $ sudo mount ${osfamily}-${operatingsystemrelease}-${architecture}.iso ${mount_dir}
@@ -90,7 +103,7 @@ source_build_dir=CentOS-8-2-2004-x86_64-dvd
     templates/boot/grub.cfg > ${source_build_dir}/EFI/BOOT/grub.cfg
 ```
 
-Add kickstart configuration file to the root of the `${source_build_dir}` as:
+Add kickstart configuration file to the root of the build directory:
 
 ```
 hostname=ks-test001
@@ -99,7 +112,7 @@ source_build_dir=CentOS-8-2-2004-x86_64-dvd
 ${source_build_dir}/ks-${hostname}.cfg
 ```
 
-Create the new boot ISO
+Create the new boot ISO image
 
 ```
 osfamily=CentOS
@@ -145,3 +158,6 @@ OUTPUT_ISO=${osfamily}-${operatingsystemrelease}-${architecture}_${hostname}.iso
 
 implantisomd5 ../${OUTPUT_ISO}
 ```
+
+#### Ref: 
+- https://access.redhat.com/solutions/60959
