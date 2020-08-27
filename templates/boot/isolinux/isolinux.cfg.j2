@@ -61,13 +61,13 @@ menu separator # insert an empty line
 label linux
   menu label ^Install {{ osfamily }} Linux {{ operatingsystemrelease }} on {{ hostname }}
   kernel vmlinuz
-  append initrd=initrd.img inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }} quiet
+  append initrd=initrd.img inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }}{% if network['bootproto'] == 'static' %} ip={{ network.ipaddress }}::{{ network.gateway }}:{{ network.netmask }}:{{ hostname }}.{{ domainname }}:{{ network.macaddress | replace(':', '') }}:none nameserver={{ network.nameserver }}{% endif %} quiet
 
 label check
   menu label Test this ^media & install {{ osfamily }} Linux {{ operatingsystemrelease }} on {{ hostname }}
   menu default
   kernel vmlinuz
-  append initrd=initrd.img inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }} rd.live.check quiet
+  append initrd=initrd.img inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }}{% if network['bootproto'] == 'static' %} ip={{ network.ipaddress }}::{{ network.gateway }}:{{ network.netmask }}:{{ hostname }}.{{ domainname }}:{{ network.macaddress | replace(':', '') }}:none nameserver={{ network.nameserver }}{% endif %} rd.live.check quiet
 
 menu separator # insert an empty line
 
@@ -83,7 +83,7 @@ label vesa
 	{{ operatingsystemrelease }} on {{ hostname }}.
   endtext
   kernel vmlinuz
-  append initrd=initrd.img inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }} nomodeset quiet
+  append initrd=initrd.img inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }}{% if network['bootproto'] == 'static' %} ip={{ network.ipaddress }}::{{ network.gateway }}:{{ network.netmask }}:{{ hostname }}.{{ domainname }}:{{ network.macaddress | replace(':', '') }}:none nameserver={{ network.nameserver }}{% endif %} nomodeset quiet
 
 label rescue
   menu indent count 5
