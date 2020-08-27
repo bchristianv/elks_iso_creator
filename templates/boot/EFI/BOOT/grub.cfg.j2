@@ -21,16 +21,16 @@ search --no-floppy --set=root -l '{{ osfamily }}-{{ operatingsystemrelease }}-{{
 
 ### BEGIN /etc/grub.d/10_linux ###
 menuentry 'Install {{ osfamily }} Linux {{ operatingsystemrelease }} on {{ hostname }}' --class fedora --class gnu-linux --class gnu --class os {
-	linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }} quiet
+	linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }}{% if network['bootproto'] == 'static' %} ip={{ network.ipaddress }}::{{ network.gateway }}:{{ network.netmask }}:{{ hostname }}.{{ domainname }}:{{ network.macaddress | replace(':', '') }}:none nameserver={{ network.nameserver }}{% endif %} quiet
 	initrdefi /images/pxeboot/initrd.img
 }
 menuentry 'Test this media & install {{ osfamily }} Linux {{ operatingsystemrelease }} on {{ hostname }}' --class fedora --class gnu-linux --class gnu --class os {
-	linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }} rd.live.check quiet
+	linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }}{% if network['bootproto'] == 'static' %} ip={{ network.ipaddress }}::{{ network.gateway }}:{{ network.netmask }}:{{ hostname }}.{{ domainname }}:{{ network.macaddress | replace(':', '') }}:none nameserver={{ network.nameserver }}{% endif %} rd.live.check quiet
 	initrdefi /images/pxeboot/initrd.img
 }
 submenu 'Troubleshooting -->' {
 	menuentry 'Install {{ osfamily }} Linux {{ operatingsystemrelease }} on {{ hostname }} in basic graphics mode' --class fedora --class gnu-linux --class gnu --class os {
-		linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }} nomodeset quiet
+		linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }} inst.ks=hd:LABEL={{ osfamily }}-{{ operatingsystemrelease }}-{{ architecture }}:/{{ kickstart_template|replace('.j2', '') }}{% if network['bootproto'] == 'static' %} ip={{ network.ipaddress }}::{{ network.gateway }}:{{ network.netmask }}:{{ hostname }}.{{ domainname }}:{{ network.macaddress | replace(':', '') }}:none nameserver={{ network.nameserver }}{% endif %} nomodeset quiet
 		initrdefi /images/pxeboot/initrd.img
 	}
 	menuentry 'Rescue a {{ osfamily }} Linux system' --class fedora --class gnu-linux --class gnu --class os {
