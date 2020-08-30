@@ -1,0 +1,3 @@
+{% for user in users %}
+user --name={{ user['name'] }} --password={{ user['password'] }} --iscrypted --uid={{ user['uid'] }} --gecos="{{ user['gecos'] }}" --gid={{ user['gid'] }} --groups={{ user['groups'] }}
+{%- endfor %}

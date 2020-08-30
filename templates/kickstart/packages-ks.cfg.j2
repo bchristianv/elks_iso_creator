@@ -1,0 +1,10 @@
+{% for m in modules %}
+module --name={{ m['name'] }} --stream={{ m['stream'] }}
+{%- endfor %}
+
+%packages
+{%- for p in packages %}
+{{ p }}
+{%- endfor %}
+
+%end

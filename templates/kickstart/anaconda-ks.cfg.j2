@@ -1,0 +1,81 @@
+#version=RHEL8
+ignoredisk --only-use={{ block_device }}
+# Partition clearing information
+zerombr
+clearpart --initlabel {% if block_device is defined %}--drives={{ block_device }}{% else %} --all{% endif %}
+{%- if operatingsystemrelease < '8' %}
+# System authorization information
+auth --enableshadow --passalgo=sha512
+{% endif %}
+# Additional Repositories
+{% for repo in addtl_repos %}repo --name="{{ repo.name }}" --baseurl={{ repo.url }}{% endfor %}
+{%- if install_url is defined %}
+# Use network installation
+url --url="{{ install_url }}"
+{% endif -%}
+# Use graphical install
+graphical
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+# Network information
+{%- if network['bootproto'] == 'dhcp' %}
+# DHCP configuration
+network --bootproto={{ network['bootproto'] }} --device={{ network['device'] }} --ipv6=auto --activate
+{% else %}
+# Static IP configuration
+network --bootproto={{ network['bootproto'] }} --device={{ network['device'] }} --gateway={{ network['gateway'] }} --ip={{ network['ipaddress'] }} --nameserver={{ network['nameserver'] }} --netmask={{ network['netmask'] }} --ipv6=auto --activate
+{%- endif %}
+network  --hostname={{ hostname }}.{{ domainname }}
+# Root password
+rootpw --iscrypted --lock {{ rootpw }}
+# Setup Agent on first boot
+firstboot --disable
+# Do not configure the X Window System
+skipx
+# System services
+services{% if services['enabled'] is defined %} --enabled="{% for s in services['enabled'] %}{{ s }}{{ "," if not loop.last }}{% endfor %}"{% endif %}{% if services['disabled'] is defined %} --disabled="{% for s in services['disabled'] %}{{ s }}{{ "," if not loop.last }}{% endfor %}"{% endif %}
+# System timezone
+timezone {{ timezone }} --isUtc{% if ntpservers is defined %} --ntpservers={% for s in ntpservers %}{{ s }}{{ "," if not loop.last }}{% endfor %}{% endif %}
+# System bootloader configuration
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive={{ block_device }}
+{%- if syspurpose is defined %}
+# Intended system purpose
+syspurpose --role="{{ syspurpose['role'] }}" --sla="{{ syspurpose['sla'] }}" --usage="{{ syspurpose['usage'] }}"
+{%- endif %}
+{%- if rhsm is defined %}
+rhsm --connect-to-insights --organization={{ rhsm['organization'] }} --activation-key={{ rhsm['activation-key'] }}
+{%- endif %}
+# License agreement
+eula --agreed
+
+shutdown
+
+# User accounts
+{%- include 'users-ks.cfg.j2' ignore missing %}
+
+# Disk partitioning information
+{%- include 'partitioning-ks.cfg.j2' %}
+
+# Module streams and Packages
+{%- include 'packages-ks.cfg.j2' %}
+
+# Optional sections
+{%- include 'pre-ks.cfg.j2' ignore missing %}
+{%- include 'preinst-ks.cfg.j2' ignore missing %}
+{%- include 'post-ks.cfg.j2' ignore missing %}
+{%- include 'onerror-ks.cfg.j2' ignore missing %}
+
+#%addon com_redhat_subscription_manager
+#%end
+
+%addon com_redhat_kdump --enable --reserve-mb='auto'
+%end
+
+%anaconda
+pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --emptyok
+pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+%end

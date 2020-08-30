@@ -1,0 +1,15 @@
+{% if disk == 'autopart' %}
+# Auto partition layout
+autopart --type=lvm
+{%- else %}
+# Custom partitioning layout
+{%- for part in disk['partitions'] %}
+part {{ part['mount'] }} --fstype="{{ part['fstype'] }}" --ondisk={{ block_device }} --size={{ part['size'] }}{%if part['fsoptions'] is defined %} --fsoptions="{{ part['fsoptions'] }}"{% endif %}{%if part['grow'] is true %} --grow{% endif %}
+{%- endfor %}
+{%- for vg in disk['volgroups'] %}
+volgroup {{ vg['name'] }}{{ hostname }} --pesize={{ vg['pesize'] }} {{ vg['part'] }}
+{%- endfor %}
+{%- for lv in disk['logvols'] %}
+logvol {{ lv['mount'] }} --fstype="{{ lv['fstype'] }}" --size={{ lv['size'] }} --name={{ lv['name'] }} --vgname={{ lv['vgname'] }}{{ hostname }}{%if lv['grow'] is true %} --grow{% endif %}
+{%- endfor %}
+{%- endif %}

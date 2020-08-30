@@ -1,0 +1,96 @@
+---
+
+# Required boot image configuration variables
+grub_timeout: 5
+isolinux_timeout: 50
+osfamily: CentOS
+operatingsystemrelease: 8-2-2004
+architecture: x86_64
+hostname: example
+domainname: localdomain.local
+
+# Optional boot image and kickstart configuration variables: only ipaddress,
+# netmask, gateway, macaddress, and nameserver are required by the boot image
+# configuration templates when using a static network configuration. See the
+# kickstart template for network variables it uses.
+network:
+  # bootproto: dhcp
+  bootproto: static
+  ipaddress: 10.1.1.10
+  netmask: 255.255.255.0
+  gateway: 10.1.1.1
+  macaddress: 00:AA:BB:11:22:33
+  device: 00:AA:BB:11:22:33
+  nameserver: 10.1.1.2
+
+# Kickstart configuration variables
+addtl_repos:
+  - name: AppStream
+    url: https://mirrors.edge.kernel.org/centos/8/AppStream/x86_64/kickstart
+block_device: nvme0n1
+# disk: autopart
+disk:
+  partitions:
+    - mount: pv.222
+      fstype: lvmpv
+      size: 1024
+      grow: True
+    - mount: /boot/efi
+      fstype: efi
+      size: 1024
+      fsoptions: umask=0077,shortname=winnt
+    - mount: /boot
+      fstype: xfs
+      size: 1024
+  volgroups:
+    - name: el_
+      pesize: 4096
+      part: pv.222
+  logvols:
+    - name: root
+      mount: /
+      fstype: xfs
+      size: 1024
+      vgname: el_
+      grow: True
+    - name: swap
+      mount: swap
+      fstype: swap
+      size: 2048
+      vgname: el_
+install_url: https://mirrors.edge.kernel.org/centos/8/BaseOS/x86_64/kickstart
+modules:
+  - name: python36
+    stream: 3.6
+packages:
+  - '@^minimal-environment'
+  - '@guest-agents'
+  - '@standard'
+  - 'kexec-tools'
+  - '@python36:3.6/common'
+ntpservers:
+  - 2.centos.pool.ntp.org
+  - 2.centos.pool.ntp.org
+  - 2.centos.pool.ntp.org
+  - 2.centos.pool.ntp.org
+# rhsm:
+#   organization: myorg
+#   activation-key: mykey
+rootpw: encrypted_password
+services:
+  enabled:
+    - chronyd
+#   disabled:
+#     - ntpd
+# syspurpose:
+#   role: Red Hat Enterprise Linux Server
+#   sla: Self-Support
+#   usage: Development/Test
+timezone: America/Los_Angeles
+users:
+  - name: username
+    password: encrypted_password
+    gecos: User Name
+    uid: 1000
+    gid: 1000
+    groups: wheel
